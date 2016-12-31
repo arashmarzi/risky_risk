@@ -3,6 +3,9 @@ using System;
 using RiskAi.Game.Agent;
 using RiskAi.Game;
 using RiskAi.Search.BFS;
+using RiskAi.Search.AStar;
+using System.Linq;
+using RiskAi.Game.Land;
 
 namespace RiskAi
 {
@@ -18,6 +21,7 @@ namespace RiskAi
 		static List<Player> Players;
 		static bool finished;
 		static BreadthFirstSearch bfs;
+		static AStar astar;
 
 		static void Main(string[] args)
 		{
@@ -40,18 +44,17 @@ namespace RiskAi
 			// Update the board
 			UpdateBoard(Players, Board);
 
-			// Initialize bfs object
-			bfs = new BreadthFirstSearch((Board)Board.Clone());
+			Player player = Players[0];
 
-			// Perform a bfs starting from alaska and print out 
-			// the territories in visited order and distance
-			bfs.Start("alaska");
-			List<BfsTile> tiles = bfs.Tiles;
+			var pTerritories = player.ControlledTerritories;
 
-			foreach (BfsTile t in tiles)
-			{
-				Console.WriteLine(t.Id + " : " + t.Distance);
-			}
+
+			var query = from n in pTerritories where (n.Value.Equals(3)) select n.Key;
+
+			Territory start = Board.Territories.Find(x => x.Name == query.ElementAt(0));
+			Territory finish = Board.Territories.Find(x => x.Name == query.ElementAt(1));
+
+			TestAStar(player, Board, start, finish);
 
 			do
 			{
@@ -72,7 +75,6 @@ namespace RiskAi
 					// update territories on board
 					Mechanics.UpdateBoard(Players, Board);
 
-
 					// perform attacking
 
 					// tactical move
@@ -85,7 +87,6 @@ namespace RiskAi
 
 			} while (!finished);
 		}
-
 
 		/// <summary>
 		/// Gets the reinforcements for a given player.
@@ -146,6 +147,31 @@ namespace RiskAi
 		private static void DistributeTerritoriesToPlayers(List<Player> agents, Board board)
 		{
 			Mechanics.DistributeTerritories(agents, board.Territories, MAX_NUM_TERRITORIES);
+		}
+
+		private static void TestBfs()
+		{
+			// Initialize bfs object
+			bfs = new BreadthFirstSearch((Board)Board.Clone());
+
+			// Perform a bfs starting from alaska and print out 
+			// the territories in visited order and distance
+			bfs.Start("alaska");
+			List<BfsTile> tiles = bfs.Tiles;
+
+			foreach (BfsTile t in tiles)
+			{
+				Console.WriteLine(t.Id + " : " + t.Distance);
+			}
+		}
+
+		private static void TestAStar(Player player, Board board, Territory start, Territory finish)
+		{
+			astar = new AStar(board);
+
+			astar.start(board, player, start, finish);
+
+
 		}
 	}
 }

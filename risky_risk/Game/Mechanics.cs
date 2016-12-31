@@ -21,7 +21,7 @@ namespace RiskAi.Game
 		/// <param name="players">Players.</param>
 		/// <param name="territories">Territories.</param>
 		/// <param name="max_num_territories">Max number territories.</param>
-        public static void DistributeTerritories(List<Player> players, TerritoryList territories, int max_num_territories)
+		public static void DistributeTerritories(List<Player> players, List<Territory> territories, int max_num_territories)
         {
             
             int numPlayers = players.Count;
@@ -45,7 +45,7 @@ namespace RiskAi.Game
 						 */
 						territoryToRemove = IndexToName(territoryIndex, territories);
 						player.GainTerritory(territoryToRemove, initialTroop);
-						territories.Remove(territoryToRemove);
+						territories.RemoveAll(x => x.Name == territoryToRemove);
                     } catch (ArgumentOutOfRangeException ex)
 					{
                         break;
@@ -95,7 +95,7 @@ namespace RiskAi.Game
 		/// <returns>Name of the territory.</returns>
 		/// <param name="index">Index.</param>
 		/// <param name="territories">Territories.</param>
-        private static string IndexToName(int index, TerritoryList territories)
+		private static string IndexToName(int index, List<Territory> territories)
         {
             string name = null;
             int i = 0;
@@ -171,7 +171,7 @@ namespace RiskAi.Game
             {
                 foreach (KeyValuePair<string, int> kvp in a.ControlledTerritories)
                 {
-                    board.Territories[kvp.Key].UpdateOwner(a.Name, kvp.Value);
+					board.Territories.Find(x => x.Name == kvp.Key).UpdateOwner(a.Name, kvp.Value);
                 }
             }
         }

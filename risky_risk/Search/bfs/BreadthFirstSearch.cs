@@ -16,7 +16,7 @@ namespace RiskAi.Search.BFS
             Queue = new Queue<BfsTile>();
         }
 
-        private List<BfsTile> InitializeTiles(TerritoryList territories)
+        private List<BfsTile> InitializeTiles(List<Territory> territories)
         {
             List<BfsTile> tiles = new List<BfsTile>();
             foreach (Territory t in territories)

@@ -55,6 +55,7 @@
     <None Include="resources\game.json" />
     <None Include="resources\territories.json" />
     <None Include="packages.config" />
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Game\" />

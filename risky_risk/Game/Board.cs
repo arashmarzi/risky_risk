@@ -2,13 +2,14 @@
 using RiskAi.Game.Land;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using System.Collections.Generic;
 
 namespace RiskAi.Game
 {
 	/// <summary>
 	/// The Board class represents a graph, which is composed of a collection of nodes and edges.  This Board class
 	/// maintains its collection of nodes using the NodeList class, which is a collection of Territory objects.
-	/// It delegates the edge maintenance to the Territory class.  The Territory class maintains the edge information using
+	/// It delegates the edge maintenance to the Territory class. The Territory class maintains the edge information using
 	/// the adjacency list technique.
 	/// </summary>
 	[Serializable]
@@ -16,8 +17,8 @@ namespace RiskAi.Game
 	{
 		#region Private Member Variables
 		// private member variables
-		private TerritoryList territories;
-		private ContinentList continents;
+		private List<Territory> territories;
+		private List<Continent> continents;
 		private int cardBonus;
 		#endregion
 
@@ -27,8 +28,8 @@ namespace RiskAi.Game
 		/// </summary>
 		public Board()
 		{
-			territories = new TerritoryList();
-			continents = new ContinentList();
+			territories = new List<Territory>();
+			continents = new List<Continent>();
 			cardBonus = 4;
 		}
 
@@ -36,7 +37,7 @@ namespace RiskAi.Game
 		/// Creates a new graph class instance based on a list of nodes.
 		/// </summary>
 		/// <param name="territories">The list of nodes to populate the newly created Board class with.</param>
-		public Board(TerritoryList territories, ContinentList continents)
+		public Board(List<Territory> territories, List<Continent> continents)
 		{
 			this.territories = territories;
 			this.continents = continents;
@@ -66,7 +67,7 @@ namespace RiskAi.Game
 		public virtual Territory AddNode(Territory t)
 		{
 			// Make sure the key is unique
-			if (!territories.ContainsKey(t.Name))
+			if (!territories.Exists(x => x.Name == t.Name))
 			{
 				territories.Add(t);
 				return t;
@@ -77,7 +78,7 @@ namespace RiskAi.Game
 
 		public virtual Continent AddNode(Continent c)
 		{
-			if (!continents.ContainsKey(c.Name))
+			if (!continents.Exists(x => x.Name == c.Name))
 			{
 				continents.Add(c);
 				return c;
@@ -99,38 +100,9 @@ namespace RiskAi.Game
 			}
 		}
 
-		#region Contains Methods
 		/// <summary>
-		/// Determines if a node exists within the graph.
+		/// Clone this instance.
 		/// </summary>
-		/// <param name="t">The node to check for in the graph.</param>
-		/// <returns><b>True</b> if the node <b>n</b> exists in the graph, <b>False</b> otherwise.</returns>
-		public virtual bool Contains(Territory t)
-		{
-			return ContainsTerritory(t.Name);
-		}
-
-		public virtual bool Contains(Continent c)
-		{
-			return ContainsContinent(c.Name);
-		}
-		#endregion
-
-		/// <summary>
-		/// Determines if a node exists within the graph.
-		/// </summary>
-		/// <param name="key">The key of the node to check for in the graph.</param>
-		/// <returns><b>True</b> if a node with key <b>key</b> exists in the graph, <b>False</b> otherwise.</returns>
-		public virtual bool ContainsTerritory(string name)
-		{
-			return territories.ContainsKey(name);
-		}
-
-		public virtual bool ContainsContinent(string name)
-		{
-			return continents.ContainsKey(name);
-		}
-
 		public object Clone()
 		{
 			BinaryFormatter BF = new BinaryFormatter();
@@ -159,7 +131,7 @@ namespace RiskAi.Game
 		/// <summary>
 		/// Returns a reference to the set of nodes in the graph.
 		/// </summary>
-		public virtual TerritoryList Territories
+		public virtual List<Territory> Territories
 		{
 			get
 			{
@@ -167,7 +139,7 @@ namespace RiskAi.Game
 			}
 		}
 
-		public virtual ContinentList Continents
+		public virtual List<Continent> Continents
 		{
 			get
 			{

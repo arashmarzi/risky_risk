@@ -16,7 +16,7 @@ namespace RiskAi.Search.AStar
             Parent = null;
             HValue = 0;
             GValue = 0;
-            FValue = 0;
+			FValue = GValue + HValue;
         }
     }
 }
