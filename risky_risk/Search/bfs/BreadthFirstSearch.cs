@@ -33,7 +33,7 @@ namespace RiskAi.Search.BFS
 
         private BfsTile FindBfsTile(string id)
         {
-            return Tiles.Find(x => x.Id == id);
+            return Tiles.Find(x => x.Name == id);
         }
 
         public void Start(string root)

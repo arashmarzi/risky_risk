@@ -8,7 +8,7 @@ namespace RiskAi.Search.BFS
 
         public BfsTile(string id, Territory territory)
         {
-            Id = id;
+            Name = id;
             Territory = territory;
             Parent = null;
             Distance = 0;

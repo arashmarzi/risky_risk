@@ -5,13 +5,14 @@ namespace RiskAi.Search.AStar
 {
     class StarTile : Tile
     {
+		public string Name { get; set; }
         public int HValue { get; set; }
         public int GValue { get; set; }
         public int FValue { get; set; }
         public StarTile Parent { get; set; }
-        public StarTile(string id, Territory territory)
+		public StarTile(string name, Territory territory)
         {
-            Id = id;
+            Name = name;
             Territory = territory;
             Parent = null;
             HValue = 0;

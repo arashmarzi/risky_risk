@@ -161,7 +161,7 @@ namespace RiskAi
 
 			foreach (BfsTile t in tiles)
 			{
-				Console.WriteLine(t.Id + " : " + t.Distance);
+				Console.WriteLine(t.Name + " : " + t.Distance);
 			}
 		}
 

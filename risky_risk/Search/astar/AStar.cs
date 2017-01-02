@@ -26,78 +26,75 @@ namespace RiskAi.Search.AStar
         }
 
         public void start(Board board, Player agent, Territory start, Territory finish)
-        {
+		{
 			StarTile current = null;
 
-            // Must create a path from start territory to finish territory
+			// Must create a path from start territory to finish territory
 			List<Territory> territories = board.Territories;
-
-			// Add start territory as part of the open set
-            OpenSet.Add(new StarTile(start.Name, start));
 
 			// Calculate the straight line distance from all territories
 			// to the end territory
-            Dictionary<string, int> sldMap = CalculateSLD(finish.Name);
+			sldMap = CalculateSLD(finish.Name);
 
-            // loop through A* steps until goal is reached
-			while(OpenSet.Count > 0)
+			// Add start territory as part of the open set
+			OpenSet.Add(new StarTile(start.Name, start));
+
+			// loop through A* steps until goal is reached
+			while (OpenSet.Count > 0 && !IsGoalFound)
 			{
-				GetMinFValue();
-			}
-			while (!IsGoalFound)
-            {
-                current = GetMinFValue();
+				// Grab the tile with the lowest/best value
+				current = GetMinFValue();
 
-                // there are no more members of the OpenSet to examine
-                if(current == null)
-                {
-                    break;
-                }
+				// Add the current tile to the close set as part of the path
+				CloseSet.Add(current);
 
-                // current territory is finish territory
-                if(current.Id == finish.Name)
-                {
-					// Reach the goal Territory
+				// Finish the algorithm if we have reach the goal territory
+				if (current.Name == finish.Name)
+				{
 					IsGoalFound = true;
 
-					// Create Path
-                }
+					Path = ConstructPath(current);
+				}
 
-                List<StarTile> frontier = GetFrontier(current, board);
+				// Continue on with the algorithm
+				else
+				{
+					// Grab the neighbours of the current tile
+					List<StarTile> frontier = GetFrontier(current, territories);
 
-                // loop through frontier and calculate heuristic for current territory
-                foreach(StarTile t in frontier)
-                {
-                    // associate frontier territory to parent tile
-                    t.Parent = current; // is this really necessary since we do it below?
+					foreach (StarTile successor in frontier)
+					{
+						// associate frontier territory to parent tile
+						successor.Parent = current; // is this really necessary since we do it below?
 
-                    // enemy territories are considered empty tiles, available to be conquered
-                    if(t.Territory.Owner != current.Territory.Owner)
-                    {
-						// TODO: This is where ty
-                        //CalculateHeuristic(t, start, finish);
+						// enemy territories are considered empty tiles, available to be conquered
+						if (successor.Territory.Owner != current.Territory.Owner)
+						{
+							CalculateHeuristic(successor);
 
-                        t.Parent = current;
-                    }
-                    
-                    // goal territory is reached
-                    else if(t.Territory.Name == finish.Name)
-                    {
-                        t.Parent = current;
+							OpenSet.Add(successor);
+						}
 
-                        IsGoalFound = true;
+						// goal territory is reached
+						else if (successor.Territory.Name == finish.Name)
+						{
+							successor.Parent = current;
 
-                        Path = ConstructPath(t);
-                    }
+							IsGoalFound = true;
 
-                    // self owned territory, not seen as obstacle because it is already owned
-                    else if(t.Territory.Owner == current.Territory.Owner)
-                    {
-                        // do not need to calculate anything, just skip
-                    }
-                }
-            }
-        }
+							Path = ConstructPath(successor);
+						}
+
+						// self owned territory, not seen as obstacle because it is already owned
+						else if (successor.Territory.Owner == current.Territory.Owner)
+						{
+							// do not need to calculate anything, just skip
+						}
+					} // foreach
+					
+				} // A* logic
+			} // while OpenSet.Count > 0 && !IsGoalFound
+		}
 
         private List<string> ConstructPath(StarTile start)
         {
@@ -106,7 +103,7 @@ namespace RiskAi.Search.AStar
             
             do
             {
-                path.Add(current.Id);
+                path.Add(current.Name);
                 current = current.Parent;
             } while (current != null);
 
@@ -124,7 +121,7 @@ namespace RiskAi.Search.AStar
             bfs.Start(name);
             foreach (BfsTile bfsTile in bfs.Tiles)
             {
-                sldMap.Add(bfsTile.Id, bfsTile.Distance);
+                sldMap.Add(bfsTile.Name, bfsTile.Distance);
             }
 
             return sldMap;
@@ -140,27 +137,33 @@ namespace RiskAi.Search.AStar
 			if (tile.Parent != null)
 			{
 				tile.GValue = tile.Parent.GValue + 1;
-				tile.HValue = sldMap[tile.Id];
+				tile.HValue = sldMap[tile.Name];
 				tile.FValue = tile.GValue + tile.HValue;
 			}
 		}
 
 		/// <summary>
-		/// Get the frontier tiles of the current tile.
+		/// Get the frontier tiles of the current tile; frontier is the neighbours of a a given tile.
 		/// </summary>
 		/// <returns>The frontier.</returns>
 		/// <param name="current">Current.</param>
-        private List<StarTile> GetFrontier(StarTile current, Board board)
+		private List<StarTile> GetFrontier(StarTile current, List<Territory> territories)
         {
 			List<StarTile> frontier = new List<StarTile>();
 
-			List<string> neighbours = board.Territories.Find(x => x.Name == current.Id).Neighbours;
+			// Grab the neighbours of the given tile
+			List<string> neighbours = territories.Find(x => x.Name == current.Name).Neighbours;
 
+			// For each neighbour, check to see if it is not a member of the Close Set or Open Set
+			// so that we can add it to the frontier
 			foreach(string neighbour in neighbours)
 			{
-				StarTile tile = new StarTile(neighbour, board.Territories.Find(x => x.Name == neighbour));
-				tile.Parent = current;
-				frontier.Add(tile);
+				if(!OpenSet.Exists(x => x.Name == neighbour) && !CloseSet.Exists(x => x.Name == neighbour))
+				{
+					StarTile tile = new StarTile(neighbour, territories.Find(x => x.Name == neighbour));
+					tile.Parent = current;
+					frontier.Add(tile);
+				}
 			}
 
 			return frontier;
@@ -177,7 +180,7 @@ namespace RiskAi.Search.AStar
 
 			foreach (StarTile tile in OpenSet)
 			{
-				if (tile.Id != minTile.Id &&
+				if (tile.Name != minTile.Name &&
 				    tile.FValue < minTile.FValue)
 				{
 					minTile = tile;
@@ -186,68 +189,5 @@ namespace RiskAi.Search.AStar
 
 			return minTile;
         }
-
-		private void Start2(Board board, Player agent, Territory start, Territory finish)
-		{
-			StarTile current = null;
-
-			// Must create a path from start territory to finish territory
-			List<Territory> territories = board.Territories;
-
-			// Add start territory as part of the open set
-			OpenSet.Add(new StarTile(start.Name, start));
-
-			// Calculate the straight line distance from all territories
-			// to the end territory
-			sldMap = CalculateSLD(finish.Name);
-
-			// A*
-		//			initialize the open list
-		//initialize the closed list
-		//put the starting node on the open list (you can leave its f at zero)
-
-		//while the open list is not empty
-		//	find the node with the least f on the open list, call it "q"
-
-		//	pop q off the open list
-
-		//	generate q's 8 successors and set their parents to q
-
-		//	for each successor
-
-		//		if successor is the goal, stop the search
-
-		//		successor.g = q.g + distance between successor and q
-
-		//		successor.h = distance from goal to successor
-
-		//		successor.f = successor.g + successor.h
-
-
-		//		if a node with the same position as successor is in the OPEN list \
-		//            which has a lower f than successor, skip this successor
-
-		//		if a node with the same position as successor is in the CLOSED list \ 
-		//            which has a lower f than successor, skip this successor
-		//		otherwise, add the node to the open list
-
-		//	end
-		//	push q on the closed list
-		//end
-
-			while(OpenSet.Count > 0)
-			{
-				foreach(StarTile tile in OpenSet)
-				{
-					CalculateHeuristic(tile);
-				}
-				
-				current = GetMinFValue();
-
-				List<StarTile> successors = GetFrontier(current, board);
-				
-			}
-			
-		}
     }
 }
