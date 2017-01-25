@@ -11,20 +11,32 @@ namespace RiskAi.Search.AStar
     {
         private List<StarTile> OpenSet { get; set; }
         private List<StarTile> CloseSet { get; set; }
-        private bool IsGoalFound { get; set; }
-        private List<string> Path { get; set; }
+		private bool IsGoalFound { get; set; }
         private BreadthFirstSearch bfs { get; set; }
 		private Dictionary<string, int> sldMap;
 
+		public string Path { get; private set; }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:RiskAi.Search.AStar.AStar"/> class.
+		/// </summary>
+		/// <param name="board">Board.</param>
         public AStar(Board board)
         {
             OpenSet = new List<StarTile>();
             CloseSet = new List<StarTile>();
             IsGoalFound = false;
-            Path = new List<string>();
+			Path = System.String.Empty;
             bfs = new BreadthFirstSearch(board);
         }
 
+		/// <summary>
+		/// Start the algorithm from a given start territory to a given finish territory.
+		/// </summary>
+		/// <param name="board">Board.</param>
+		/// <param name="agent">Agent.</param>
+		/// <param name="start">Start.</param>
+		/// <param name="finish">Finish.</param>
         public void start(Board board, Player agent, Territory start, Territory finish)
 		{
 			StarTile current = null;
@@ -48,6 +60,9 @@ namespace RiskAi.Search.AStar
 				// Add the current tile to the close set as part of the path
 				CloseSet.Add(current);
 
+				// Remove the current tile from the Open Set because it has been visited
+				OpenSet.Remove(current);
+				 
 				// Finish the algorithm if we have reach the goal territory
 				if (current.Name == finish.Name)
 				{
@@ -64,9 +79,6 @@ namespace RiskAi.Search.AStar
 
 					foreach (StarTile successor in frontier)
 					{
-						// associate frontier territory to parent tile
-						successor.Parent = current; // is this really necessary since we do it below?
-
 						// enemy territories are considered empty tiles, available to be conquered
 						if (successor.Territory.Owner != current.Territory.Owner)
 						{
@@ -75,39 +87,64 @@ namespace RiskAi.Search.AStar
 							OpenSet.Add(successor);
 						}
 
-						// goal territory is reached
-						else if (successor.Territory.Name == finish.Name)
-						{
-							successor.Parent = current;
-
-							IsGoalFound = true;
-
-							Path = ConstructPath(successor);
-						}
-
 						// self owned territory, not seen as obstacle because it is already owned
 						else if (successor.Territory.Owner == current.Territory.Owner)
 						{
 							// do not need to calculate anything, just skip
 						}
+
+						// check if goal territory is reached
+						if (successor.Territory.Name == finish.Name)
+						{
+							IsGoalFound = true;
+
+							// Remove the current tile from the Open Set because it has been visited
+							CloseSet.Add(successor);
+
+							// Remove the current tile from the Open Set because it has been visited
+							OpenSet.Remove(successor);
+
+							// Create a path from start (first node) to finish (last node)
+							Path = ConstructPath(successor);
+						}
 					} // foreach
-					
 				} // A* logic
 			} // while OpenSet.Count > 0 && !IsGoalFound
 		}
 
-        private List<string> ConstructPath(StarTile start)
+		/// <summary>
+		/// Constructs the path from start tile to finish tile.
+		/// </summary>
+		/// <returns>The path from start tile to finish tile.</returns>
+		/// <param name="finish">finish tile.</param>
+        private string ConstructPath(StarTile finish)
         {
-            StarTile current = start;
+            StarTile current = finish;
+			string pathStr = System.String.Empty;
             List<string> path = new List<string>();
             
-            do
+            // Start from finish tile and grab parents until
+			// the beginning
+			do
             {
                 path.Add(current.Name);
                 current = current.Parent;
             } while (current != null);
 
-            return path;
+			// Create string of tiles visited from start to finish
+			for (int i = path.Count - 1; i >= 0; i--)
+			{
+				if(i != 0)
+				{
+					pathStr += path[i] + " --> ";
+				}
+				else
+				{
+					pathStr += path[i];
+				}
+			}
+
+            return pathStr;
         }
 
 		/// <summary>

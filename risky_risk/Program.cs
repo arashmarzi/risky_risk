@@ -44,17 +44,7 @@ namespace RiskAi
 			// Update the board
 			UpdateBoard(Players, Board);
 
-			Player player = Players[0];
-
-			var pTerritories = player.ControlledTerritories;
-
-
-			var query = from n in pTerritories where (n.Value.Equals(3)) select n.Key;
-
-			Territory start = Board.Territories.Find(x => x.Name == query.ElementAt(0));
-			Territory finish = Board.Territories.Find(x => x.Name == query.ElementAt(1));
-
-			TestAStar(player, Board, start, finish);
+			TestAStar(Board);
 
 			do
 			{
@@ -165,13 +155,23 @@ namespace RiskAi
 			}
 		}
 
-		private static void TestAStar(Player player, Board board, Territory start, Territory finish)
+		private static void TestAStar(Board board)
 		{
+			Player player = Players[0];
+
+			var pTerritories = player.ControlledTerritories;
+
+
+			var query = from n in pTerritories where (n.Value.Equals(3)) select n.Key;
+
+			Territory start = Board.Territories.Find(x => x.Name == query.ElementAt(0));
+			Territory finish = Board.Territories.Find(x => x.Name == query.ElementAt(1));
+
 			astar = new AStar(board);
 
 			astar.start(board, player, start, finish);
 
-
+			Console.WriteLine("The path is " + astar.Path);
 		}
 	}
 }
