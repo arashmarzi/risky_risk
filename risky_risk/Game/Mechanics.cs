@@ -71,6 +71,11 @@ namespace RiskAi.Game
             }
         }
 
+		/// <summary>
+		/// Applies the card bonus.
+		/// </summary>
+		/// <param name="player">Player.</param>
+		/// <param name="board">Board.</param>
         public static void ApplyCardBonus(Player player, Board board)
         {
             if(player.CanCashIn())
@@ -215,6 +220,12 @@ namespace RiskAi.Game
             return players;
         }
 
+		/// <summary>
+		/// Initializes the board.
+		/// </summary>
+		/// <returns>The board.</returns>
+		/// <param name="territoryFilePath">Territory file path.</param>
+		/// <param name="continentFilePath">Continent file path.</param>
         public static Board InitializeBoard(string territoryFilePath, string continentFilePath)
         {
             // instantiate board graph

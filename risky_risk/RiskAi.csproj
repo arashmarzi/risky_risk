@@ -17,6 +17,7 @@
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\risky_risk.xml</DocumentationFile>
     <ExternalConsole>true</ExternalConsole>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>

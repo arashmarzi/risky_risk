@@ -10,12 +10,21 @@ namespace RiskAi.Search.BFS
         public List<BfsTile> Tiles { get; set; }
         public Queue<BfsTile> Queue { get; set; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:RiskAi.Search.BFS.BreadthFirstSearch"/> class.
+		/// </summary>
+		/// <param name="board">Board.</param>
         public BreadthFirstSearch(Board board)
         {
             Tiles = InitializeTiles(board.Territories);
             Queue = new Queue<BfsTile>();
         }
 
+		/// <summary>
+		/// Initializes the tiles.
+		/// </summary>
+		/// <returns>The tiles.</returns>
+		/// <param name="territories">Territories.</param>
         private List<BfsTile> InitializeTiles(List<Territory> territories)
         {
             List<BfsTile> tiles = new List<BfsTile>();
@@ -31,11 +40,20 @@ namespace RiskAi.Search.BFS
             return tiles;
         }
 
+		/// <summary>
+		/// Finds the bfs tile given tile id.
+		/// </summary>
+		/// <returns>The bfs tile.</returns>
+		/// <param name="id">Identifier.</param>
         private BfsTile FindBfsTile(string id)
         {
             return Tiles.Find(x => x.Name == id);
         }
 
+		/// <summary>
+		/// Start bfs from specified root.
+		/// </summary>
+		/// <param name="root">Root.</param>
         public void Start(string root)
         {
             BfsTile rootTile = FindBfsTile(root);

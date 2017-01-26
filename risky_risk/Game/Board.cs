@@ -76,6 +76,11 @@ namespace RiskAi.Game
 				throw new ArgumentException("There already exists a node in the graph with name " + t.Name);
 		}
 
+		/// <summary>
+		/// Adds the node.
+		/// </summary>
+		/// <returns>The node.</returns>
+		/// <param name="c">C.</param>
 		public virtual Continent AddNode(Continent c)
 		{
 			if (!continents.Exists(x => x.Name == c.Name))
@@ -88,6 +93,9 @@ namespace RiskAi.Game
 		}
 		#endregion
 
+		/// <summary>
+		/// Updates the card bonus.
+		/// </summary>
 		public void UpdateCardBonus()
 		{
 			if (cardBonus < 60)

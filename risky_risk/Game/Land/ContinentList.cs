@@ -108,7 +108,7 @@ namespace RiskAi.Game.Land
 
         #region NodeList Enumerator
         /// <summary>
-        /// The NodeListEnumerator method is a custom enumerator for the NodeList object.  It essentially serves
+        /// The NodeListEnumerator is a custom enumerator for the NodeList object.  It essentially serves
         /// as an enumerator over the NodeList's Hashtable class, but rather than returning DictionaryEntry values,
         /// it returns just the Continent object.
         /// <p />
@@ -117,21 +117,37 @@ namespace RiskAi.Game.Land
         public class NodeListEnumerator : IEnumerator, IDisposable
         {
             IDictionaryEnumerator list;
+
+			/// <summary>
+			/// Initializes a new instance of the <see cref="T:RiskAi.Game.Land.ContinentList.NodeListEnumerator"/> class.
+			/// </summary>
+			/// <param name="coll">Coll.</param>
             public NodeListEnumerator(IDictionaryEnumerator coll)
             {
                 list = coll;
             }
 
+			/// <summary>
+			/// Reset this instance.
+			/// </summary>
             public void Reset()
             {
                 list.Reset();
             }
 
+			/// <summary>
+			/// Moves to next list item.
+			/// </summary>
+			/// <returns><c>true</c>, if next was moved, <c>false</c> otherwise.</returns>
             public bool MoveNext()
             {
                 return list.MoveNext();
             }
 
+			/// <summary>
+			/// Gets the current.
+			/// </summary>
+			/// <value>The current.</value>
             public Continent Current
             {
                 get
@@ -149,6 +165,15 @@ namespace RiskAi.Game.Land
                 }
             }
 
+			/// <summary>
+			/// Releases all resource used by the <see cref="T:RiskAi.Game.Land.ContinentList.NodeListEnumerator"/> object.
+			/// </summary>
+			/// <remarks>Call <see cref="Dispose"/> when you are finished using the
+			/// <see cref="T:RiskAi.Game.Land.ContinentList.NodeListEnumerator"/>. The <see cref="Dispose"/> method leaves the
+			/// <see cref="T:RiskAi.Game.Land.ContinentList.NodeListEnumerator"/> in an unusable state. After calling
+			/// <see cref="Dispose"/>, you must release all references to the
+			/// <see cref="T:RiskAi.Game.Land.ContinentList.NodeListEnumerator"/> so the garbage collector can reclaim the memory
+			/// that the <see cref="T:RiskAi.Game.Land.ContinentList.NodeListEnumerator"/> was occupying.</remarks>
             public void Dispose()
             {
                 list = null;

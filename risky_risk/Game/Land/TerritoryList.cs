@@ -17,8 +17,15 @@ namespace RiskAi.Game.Land
 		// private member variables
 		private Hashtable data = new Hashtable();
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:RiskAi.Game.Land.TerritoryList"/> class.
+		/// </summary>
         public TerritoryList() { }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:RiskAi.Game.Land.TerritoryList"/> class.
+		/// </summary>
+		/// <param name="data">Data.</param>
         public TerritoryList (Hashtable data)
         {
             this.data = data;
@@ -43,6 +50,10 @@ namespace RiskAi.Game.Land
             return removed;
 		}
 
+		/// <summary>
+		/// Remove the specified name.
+		/// </summary>
+		/// <param name="name">Name.</param>
         public virtual Territory Remove(string name)
         {
             Territory removed = (Territory)data[name];
@@ -77,6 +88,9 @@ namespace RiskAi.Game.Land
 			return new NodeListEnumerator(data.GetEnumerator());
 		}
 
+		/// <summary>
+		/// Clone this instance.
+		/// </summary>
         public object Clone()
         {
             BinaryFormatter BF = new BinaryFormatter();
@@ -125,16 +139,28 @@ namespace RiskAi.Game.Land
 		public class NodeListEnumerator : IEnumerator, IDisposable
 		{
 			IDictionaryEnumerator list;
+
+			/// <summary>
+			/// Initializes a new instance of the <see cref="T:RiskAi.Game.Land.TerritoryList.NodeListEnumerator"/> class.
+			/// </summary>
+			/// <param name="coll">Coll.</param>
 			public NodeListEnumerator(IDictionaryEnumerator coll) 
 			{
 				list = coll;				
 			}
 
+			/// <summary>
+			/// Reset this instance.
+			/// </summary>
 			public void Reset() 
 			{
 				list.Reset();
 			}
 
+			/// <summary>
+			/// Moves to next list item.
+			/// </summary>
+			/// <returns><c>true</c>, if next was moved, <c>false</c> otherwise.</returns>
 			public bool MoveNext()
 			{
 				return list.MoveNext();
@@ -157,6 +183,15 @@ namespace RiskAi.Game.Land
 				}
 			}
 		   
+			/// <summary>
+			/// Releases all resource used by the <see cref="T:RiskAi.Game.Land.TerritoryList.NodeListEnumerator"/> object.
+			/// </summary>
+			/// <remarks>Call <see cref="Dispose"/> when you are finished using the
+			/// <see cref="T:RiskAi.Game.Land.TerritoryList.NodeListEnumerator"/>. The <see cref="Dispose"/> method leaves the
+			/// <see cref="T:RiskAi.Game.Land.TerritoryList.NodeListEnumerator"/> in an unusable state. After calling
+			/// <see cref="Dispose"/>, you must release all references to the
+			/// <see cref="T:RiskAi.Game.Land.TerritoryList.NodeListEnumerator"/> so the garbage collector can reclaim the memory
+			/// that the <see cref="T:RiskAi.Game.Land.TerritoryList.NodeListEnumerator"/> was occupying.</remarks>
 			public void Dispose()
 			{			
 				list = null;
