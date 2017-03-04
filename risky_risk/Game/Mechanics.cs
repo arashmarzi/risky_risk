@@ -23,7 +23,6 @@ namespace RiskAi.Game
 		/// <param name="max_num_territories">Max number territories.</param>
 		public static void DistributeTerritories(List<Player> players, List<Territory> territories, int max_num_territories)
         {
-            
             int numPlayers = players.Count;
 			int territoryIndex = -1;
 			string territoryToRemove = null;
@@ -39,7 +38,7 @@ namespace RiskAi.Game
                     try {
                         territoryIndex = GetRandomValue((byte)territories.Count); // get random territory index
 
-						/* TODO: This is not the best approach, might want to
+						/* TODO: This might not be the best approach, might want to
 						 * change how territories are stored; use of a dictionary 
 						 * instead of a list
 						 */
@@ -48,6 +47,8 @@ namespace RiskAi.Game
 						territories.RemoveAll(x => x.Name == territoryToRemove);
                     } catch (ArgumentOutOfRangeException ex)
 					{
+						Console.WriteLine(ex.Message);
+
                         break;
                     }
                 }
@@ -206,8 +207,8 @@ namespace RiskAi.Game
 		/// Initialize list of players with an empty list of territories
 		/// </summary>
 		/// <returns>The players.</returns>
-		/// <param name="numPlayers">Number players.</param>
-		/// <param name="numStartingTroops">Number starting troops.</param>
+		/// <param name="numPlayers">Number of players.</param>
+		/// <param name="numStartingTroops">Number of starting troops.</param>
         public static List<Player> InitializePlayers(int numPlayers, int numStartingTroops)
         {
             List<Player> players = new List<Player>(numPlayers);

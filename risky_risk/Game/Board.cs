@@ -147,6 +147,10 @@ namespace RiskAi.Game
 			}
 		}
 
+		/// <summary>
+		/// Gets the continents.
+		/// </summary>
+		/// <value>The continents.</value>
 		public virtual List<Continent> Continents
 		{
 			get
@@ -155,6 +159,10 @@ namespace RiskAi.Game
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the card bonus.
+		/// </summary>
+		/// <value>The card bonus.</value>
 		public virtual int CardBonus
 		{
 			get
