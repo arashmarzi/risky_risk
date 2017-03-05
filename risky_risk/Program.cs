@@ -11,17 +11,15 @@ namespace RiskAi
 {
 	class Program
 	{
-		static Board Board;
+		static Board GameBoard;
 		const int NUM_AGENTS = 4;
 		const int MAX_NUM_TERRITORIES = 42;
 		const int MAX_NUM_CONTINENTS = 6;
 		const int NUM_START_TROOPS = 30;
-		const string TERRITORY_FILE_PATH = @"..\..\resources\territories.json";
-		const string CONTINENT_FILE_PATH = @"..\..\resources\continents.json";
+		const string TERRITORY_FILE_PATH = @"../../resources/territories.json";
+		const string CONTINENT_FILE_PATH = @"../../resources/continents.json";
 		static List<Player> Players;
 		static bool finished;
-		static BreadthFirstSearch bfs;
-		static AStar astar;
 
 		static void Main(string[] args)
 		{
@@ -30,31 +28,31 @@ namespace RiskAi
 
 			// Initialize Players and the board
 			Players = InitializePlayers(NUM_AGENTS, NUM_START_TROOPS);
-			Board = InitializeBoard(TERRITORY_FILE_PATH, CONTINENT_FILE_PATH);
+			GameBoard = InitializeBoard(TERRITORY_FILE_PATH, CONTINENT_FILE_PATH);
 
 			// Assign territories to each player
-			DistributeTerritoriesToPlayers(Players, (Board)Board.Clone());
+			DistributeTerritoriesToPlayers(Players, (Board)GameBoard.Clone());
 
 			// Update the board
-			UpdateBoard(Players, Board);
+			UpdateBoard(Players, GameBoard);
 
 			// Place troops on territories for each player
 			EquallyDistributeTroops(Players);
 
 			// Update the board
-			UpdateBoard(Players, Board);
+			UpdateBoard(Players, GameBoard);
 
-			TestAStar(Board);
+			//TestAStar(Board);
 
 			do
 			{
 				foreach (Player a in Players)
 				{
 					// Calculate and apply continent bonus 
-					Mechanics.ApplyContinentBonus(a, (Board)Board.Clone());
+					Mechanics.ApplyContinentBonus(a, (Board)GameBoard.Clone());
 
 					// Cash in cards, if possible
-					Mechanics.ApplyCardBonus(a, Board); // not fully tested
+					Mechanics.ApplyCardBonus(a, GameBoard); // not fully tested
 
 					// Collect territory reinforcements
 					Mechanics.GetReinforcements(a);
@@ -63,7 +61,7 @@ namespace RiskAi
 					Mechanics.GetReinforcements(a);
 
 					// update territories on board
-					Mechanics.UpdateBoard(Players, Board);
+					Mechanics.UpdateBoard(Players, GameBoard);
 
 					// perform attacking
 
@@ -139,39 +137,8 @@ namespace RiskAi
 			Mechanics.DistributeTerritories(agents, board.Territories, MAX_NUM_TERRITORIES);
 		}
 
-		private static void TestBfs()
-		{
-			// Initialize bfs object
-			bfs = new BreadthFirstSearch((Board)Board.Clone());
-
-			// Perform a bfs starting from alaska and print out 
-			// the territories in visited order and distance
-			bfs.Start("alaska");
-			List<BfsTile> tiles = bfs.Tiles;
-
-			foreach (BfsTile t in tiles)
-			{
-				Console.WriteLine(t.Name + " : " + t.Distance);
-			}
-		}
-
-		private static void TestAStar(Board board)
-		{
-			Player player = Players[0];
-
-			var pTerritories = player.ControlledTerritories;
 
 
-			var query = from n in pTerritories where (n.Value.Equals(3)) select n.Key;
 
-			Territory start = Board.Territories.Find(x => x.Name == query.ElementAt(0));
-			Territory finish = Board.Territories.Find(x => x.Name == query.ElementAt(1));
-
-			astar = new AStar(board);
-
-			astar.start(board, player, start, finish);
-
-			Console.WriteLine("The path is " + astar.Path);
-		}
 	}
 }

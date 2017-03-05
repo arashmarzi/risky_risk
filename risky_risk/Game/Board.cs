@@ -3,6 +3,7 @@ using RiskAi.Game.Land;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace RiskAi.Game
 {
@@ -59,13 +60,12 @@ namespace RiskAi.Game
 		/// <summary>
 		/// Adds a new node to the graph.
 		/// </summary>
-		/// <param name="key">The key value of the node to add.</param>
-		/// <param name="data">The data of the node to add.</param>
 		/// <returns>A reference to the Territory that was created and added to the graph.</returns>
 		/// <remarks>If there already exists a node in the graph with the same <b>key</b> value then an
 		/// <b>ArgumentException</b> exception will be thrown.</remarks>
 		public virtual Territory AddNode(Territory t)
 		{
+			Contract.Ensures(Contract.Result<Territory>() != null);
 			// Make sure the key is unique
 			if (!territories.Exists(x => x.Name == t.Name))
 			{
